@@ -1,0 +1,18 @@
+[Unit]
+Description=AHT20 Sensor
+After=multi-user.target
+
+[Service]
+Type=simple
+User=bjoern
+Group=bjoern
+WorkingDirectory=/home/bjoern/src/python_sensor_aht20
+ExecStart=/usr/bin/python3 prometheus-textfile.py
+ExecStopPost=-rm /tmp/ambient.prom
+StandardOutput=syslog
+StandardError=syslog
+RestartSec=60s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
