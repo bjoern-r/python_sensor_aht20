@@ -21,12 +21,9 @@ Pin # | Pin Name | Connection
 ## Pre-requistes
 
 * Raspberry Pi, but could run elsewhere
+* OrangePi Zero with i2c dtb overlay activated
 * On the machine: `python3-smbus` installed
-* On Python: `smbus2` installed
 
-## Notes
-
-* The I2C bus is fixed to `1`, as it's the default one for the Raspberry Pi.
 
 ## Sources
 
