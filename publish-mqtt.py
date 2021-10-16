@@ -12,8 +12,9 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
 
-INTERVAL=10
+INTERVAL=30
 MQTT_HOST = '10.192.123.2'
+MQTT_HOST = '192.168.78.25'
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
@@ -38,8 +39,8 @@ try:
         temp = aht20.get_temperature()
 
         data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
-        sensor_data['temperature'] = temp
-        sensor_data['humidity'] = hum
+        sensor_data['temperature'] = round(temp, 2)
+        sensor_data['humidity'] = round(hum, 2)
 
         # Print in the console
         print(data)
