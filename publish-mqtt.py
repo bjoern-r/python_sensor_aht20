@@ -1,3 +1,4 @@
+#!/usr/bin/env /usr/bin/python3
 import AHT20
 import datetime, time
 import paho.mqtt.client as mqtt
@@ -12,7 +13,7 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
 
 INTERVAL=10
-MQTT_HOST = '10.192.123.1'
+MQTT_HOST = '10.192.123.2'
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
@@ -37,8 +38,8 @@ try:
         temp = aht20.get_temperature()
 
         data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
-        sensor_data['temperature'] = temperature
-        sensor_data['humidity'] = humidity
+        sensor_data['temperature'] = temp
+        sensor_data['humidity'] = hum
 
         # Print in the console
         print(data)
