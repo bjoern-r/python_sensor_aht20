@@ -10,8 +10,6 @@ WorkingDirectory=/home/bjoern/src/python_sensor_aht20
 ExecStart=/usr/bin/python3 publish-mqtt.py
 #ExecStart=/usr/bin/python3 prometheus-textfile.py
 #ExecStopPost=-rm /tmp/ambient.prom
-StandardOutput=syslog
-StandardError=syslog
 RestartSec=60s
 Restart=always
 
