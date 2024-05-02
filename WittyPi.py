@@ -20,6 +20,8 @@ WP_I2C_ALARM2_TRIGGERED=10
 WP_I2C_ACTION_REASON=11
 WP_I2C_FW_REVISION=12
 
+WP_I2C_LM75B_TEMPERATURE=50
+
 class WittyPi:
     # I2C communication driver for WittyPi, using only smbus2
 
@@ -29,7 +31,7 @@ class WittyPi:
         # Check ID
         fw_id = self.get_fw_id()
         if fw_id == 55:
-            print("WittyPi 4 L3V7 with FW",self.get_fw_revision, "found")
+            print("WittyPi 4 L3V7 with FW",self.get_fw_revision(), "found")
 
     def get_input_voltage(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_I)
@@ -60,8 +62,8 @@ class WittyPi:
         #wittypi['timestamp'] = timestamp
         wittypi['input_voltage'] = self.get_input_voltage()
         wittypi['output_voltage'] = self.get_output_voltage()
-        #wittypi['temperature'] = self.get_temperature()
-        wittypi['outputcurrent'] = self.get_output_current()
+        wittypi['temperature'] = self.get_temperature()
+        wittypi['output_current'] = self.get_output_current()
         wittypi['powermode'] = self.get_power_mode()
         return wittypi
 
@@ -70,6 +72,13 @@ class WittyPi:
 
     def get_fw_revision(self):
         return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_FW_REVISION)
+
+    def get_temperature(self):
+        d = bus.read_i2c_block_data(WP_I2C_ADDR, WP_I2C_LM75B_TEMPERATURE,2)
+        val = ((d[0]<<3)|(d[1]>>5))
+        if val >= 0x400:
+            val = (val&0x3FF)-1024
+        return val*0.125
 '''
     def get_status_busy(self):
         # Get the busy bit
