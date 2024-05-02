@@ -14,7 +14,7 @@ def on_message(client, userdata, msg):
 
 INTERVAL=30
 MQTT_HOST = '10.192.123.2'
-MQTT_HOST = '192.168.78.25'
+#MQTT_HOST = '192.168.78.25'
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
@@ -32,18 +32,20 @@ client.connect(MQTT_HOST, 1883, 60)
 
 client.loop_start()
 
+client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-T","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
+client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-H/config', '{"device_class":"humidity","name":"Humidity","unit_of_measurement":"%","value_template":"{{ value_json.humidity|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-H","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
 try:
     while True:
         # Fill a string with date, humidity and temperature
         hum = aht20.get_humidity()
         temp = aht20.get_temperature()
 
-        data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
         sensor_data['temperature'] = round(temp, 2)
         sensor_data['humidity'] = round(hum, 2)
 
         # Print in the console
-        print(data)
+        #data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
+        #print(data)
         # Sending humidity and temperature data to broaker
         client.publish('v1/bob/ambient', json.dumps(sensor_data), 1)
 
@@ -51,6 +53,11 @@ try:
         sleep_time = next_reading-time.time()
         if sleep_time > 0:
             time.sleep(sleep_time)
+        sendcount += 1
+        if sendcount > 20:
+            sendcount = 0
+            client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-T","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
+            client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-H/config', '{"device_class":"humidity","name":"Humidity","unit_of_measurement":"%","value_template":"{{ value_json.humidity|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-H","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
 except KeyboardInterrupt:
     pass
 
