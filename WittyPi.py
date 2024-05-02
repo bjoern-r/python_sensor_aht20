@@ -58,11 +58,11 @@ class WittyPi:
         #UTCtime,localtime,timestamp = get_rtc_timestamp()
         #wittypi['DateTime'] = localtime.strftime("%Y-%m-%d_%H-%M-%S")
         #wittypi['timestamp'] = timestamp
-        wittypi['input_voltage'] = get_input_voltage()
-        wittypi['output_voltage'] = get_output_voltage()
-        #wittypi['temperature'] = get_temperature()
-        wittypi['outputcurrent'] = get_output_current()
-        wittypi['powermode'] = get_power_mode()
+        wittypi['input_voltage'] = self.get_input_voltage()
+        wittypi['output_voltage'] = self.get_output_voltage()
+        #wittypi['temperature'] = self.get_temperature()
+        wittypi['outputcurrent'] = self.get_output_current()
+        wittypi['powermode'] = self.get_power_mode()
         return wittypi
 
     def get_fw_id(self):
