@@ -74,7 +74,7 @@ class WittyPi:
         return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_FW_REVISION)
 
     def get_temperature(self):
-        d = bus.read_i2c_block_data(WP_I2C_ADDR, WP_I2C_LM75B_TEMPERATURE,2)
+        d = self.i2c_bus.read_i2c_block_data(WP_I2C_ADDR, WP_I2C_LM75B_TEMPERATURE,2)
         val = ((d[0]<<3)|(d[1]>>5))
         if val >= 0x400:
             val = (val&0x3FF)-1024
