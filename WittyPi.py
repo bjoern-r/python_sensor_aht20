@@ -5,13 +5,6 @@ def get_normalized_bit(value, bit_index):
     # Return only one bit from value indicated in bit_index
     return (value >> bit_index) & 1
 
-AHT20_I2CADDR = 0x38
-AHT20_CMD_SOFTRESET = [0xBA]
-AHT20_CMD_INITIALIZE = [0xBE, 0x08, 0x00]
-AHT20_CMD_MEASURE = [0xAC, 0x33, 0x00]
-AHT20_STATUSBIT_BUSY = 7                    # The 7th bit is the Busy indication bit. 1 = Busy, 0 = not.
-AHT20_STATUSBIT_CALIBRATED = 3              # The 3rd bit is the CAL (calibration) Enable bit. 1 = Calibrated, 0 = not
-
 WP_I2C_ADDR = 0x08
 WP_I2C_ID=0
 WP_I2C_VOLTAGE_IN_I=1
