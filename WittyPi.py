@@ -31,29 +31,29 @@ class WittyPi:
         if fw_id == 55:
             print("WittyPi 4 L3V7 with FW",self.get_fw_revision, "found")
 
-    def get_input_voltage():
+    def get_input_voltage(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_I)
         d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_D)
         res = i + float(d)/100.
         return res
 
-    def get_power_mode():
+    def get_power_mode(self):
         b = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_POWER_MODE)
         return b # int 0 or 1
 
-    def get_output_voltage():
+    def get_output_voltage(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_I)
         d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_D)
         return float(i) + float(d)/100.
 
 
-    def get_output_current():
+    def get_output_current(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_CURRENT_OUT_I)
         d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_CURRENT_OUT_D)
         return float(i) + float(d)/100.
 
 
-    def getAll():
+    def getAll(self):
         wittypi = {}
         #UTCtime,localtime,timestamp = get_rtc_timestamp()
         #wittypi['DateTime'] = localtime.strftime("%Y-%m-%d_%H-%M-%S")
@@ -66,10 +66,10 @@ class WittyPi:
         return wittypi
 
     def get_fw_id(self):
-        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, WP_I2C_ID)
+        return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_ID)
 
     def get_fw_revision(self):
-        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, WP_I2C_FW_REVISION)
+        return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_FW_REVISION)
 '''
     def get_status_busy(self):
         # Get the busy bit
