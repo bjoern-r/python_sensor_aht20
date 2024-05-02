@@ -32,41 +32,25 @@ class WittyPi:
             print("WittyPi 4 L3V7 with FW",self.get_fw_revision, "found")
 
     def get_input_voltage():
-        i = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_VOLTAGE_IN_I)
-        d = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_VOLTAGE_IN_D)
+        i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_I)
+        d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_D)
         res = i + float(d)/100.
         return res
 
     def get_power_mode():
-        b = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_POWER_MODE)
+        b = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_POWER_MODE)
         return b # int 0 or 1
 
     def get_output_voltage():
-        i = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_VOLTAGE_OUT_I)
-        d = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_VOLTAGE_OUT_D)
+        i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_I)
+        d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_D)
         return float(i) + float(d)/100.
 
 
     def get_output_current():
-        i = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_CURRENT_OUT_I)
-        d = self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, I2C_CURRENT_OUT_D)
+        i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_CURRENT_OUT_I)
+        d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_CURRENT_OUT_D)
         return float(i) + float(d)/100.
-
-    def get_temperature():
-        bus = self.i2c_bus
-        ctrl = bus.read_byte_data(RTC_ADDRESS, 14)
-        ctrl2 = 7|0x20 #39 bitwise or
-        bus.write_byte_data(RTC_ADDRESS, 14,ctrl2)
-        time.sleep(0.2)
-        t1 = bus.read_byte_data(RTC_ADDRESS, 0x11)
-        t2 = bus.read_byte_data(RTC_ADDRESS, 0x12)
-        c = ''
-        sign = t1&0x80
-        if sign < 0: c+='-'
-        else: c += str(t1&0x7F)
-        c+='.'
-        c += str(((t2&0xC0)>>6)*25 )
-        return float(c)
 
 
     def getAll():
@@ -76,15 +60,16 @@ class WittyPi:
         #wittypi['timestamp'] = timestamp
         wittypi['input_voltage'] = get_input_voltage()
         wittypi['output_voltage'] = get_output_voltage()
-        wittypi['temperature'] = get_temperature()
+        #wittypi['temperature'] = get_temperature()
         wittypi['outputcurrent'] = get_output_current()
+        wittypi['powermode'] = get_power_mode()
         return wittypi
 
     def get_fw_id(self):
-        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS,WP_I2C_ID)
+        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, WP_I2C_ID)
 
     def get_fw_revision(self):
-        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS,WP_I2C_FW_REVISION)
+        return self.i2c_bus.read_byte_data(I2C_MC_ADDRESS, WP_I2C_FW_REVISION)
 '''
     def get_status_busy(self):
         # Get the busy bit
