@@ -56,6 +56,9 @@ class WittyPi:
 
 
     def getAll(self):
+        '''
+        result: {'input_voltage': 4.42, 'output_voltage': 5.18, 'temperature': 33.0, 'output_current': 0.64, 'powermode': 0}
+        '''
         wittypi = {}
         #UTCtime,localtime,timestamp = get_rtc_timestamp()
         #wittypi['DateTime'] = localtime.strftime("%Y-%m-%d_%H-%M-%S")
@@ -75,7 +78,7 @@ class WittyPi:
 
     def get_temperature(self):
         d = self.i2c_bus.read_i2c_block_data(WP_I2C_ADDR, WP_I2C_LM75B_TEMPERATURE,2)
-        val = ((d[0]<<3)|(d[1]>>5))
+        val = ( (d[0]<<3) | (d[1]>>5) )
         if val >= 0x400:
             val = (val&0x3FF)-1024
         return val*0.125
