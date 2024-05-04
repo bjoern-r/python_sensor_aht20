@@ -18,7 +18,9 @@ def publish_aht20_config(client):
 
 def publish_wittypi_config(client):
     client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-T","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","model":"LM75B","manufacturer":"WittyPi"},"expire_after":600}')
-    #client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-H/config', '{"device_class":"humidity","name":"Humidity","unit_of_measurement":"%","value_template":"{{ value_json.humidity|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-H","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-I/config', '{"device_class":"current","name":"Output Current","unit_of_measurement":"A","value_template":"{{ value_json.output_current|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-I","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vo/config', '{"device_class":"voltage","name":"Output Voltage","unit_of_measurement":"V","value_template":"{{ value_json.output_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vo","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vi/config', '{"device_class":"voltage","name":"Input Voltage","unit_of_measurement":"V","value_template":"{{ value_json.input_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vi","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
 
 INTERVAL=30
 MQTT_HOST = '10.192.123.2'
@@ -54,6 +56,7 @@ try:
         sensor_data['humidity'] = round(hum, 2)
 
         wittypi_data = wp.getAll()
+        # {'input_voltage': 4.42, 'output_voltage': 5.18, 'temperature': 33.0, 'output_current': 0.64, 'powermode': 0}
 
         # Print in the console
         #data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
