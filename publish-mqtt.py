@@ -1,5 +1,5 @@
 #!/usr/bin/env /usr/bin/python3
-import AHT20
+import AHT20,WittyPi
 import datetime, time
 import paho.mqtt.client as mqtt
 import json
@@ -25,6 +25,7 @@ def publish_wittypi_config(client):
 INTERVAL=30
 MQTT_HOST = '10.192.123.2'
 #MQTT_HOST = '192.168.78.25'
+USE_WITTIPY = False
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
@@ -43,9 +44,11 @@ client.username_pw_set("sensor", password="xxx")
 client.connect(MQTT_HOST, 1883, 60)
 
 client.loop_start()
+sendcount=0
 
 publish_aht20_config(client)
-publish_wittypi_config(client)
+if USE_WITTIPY:
+    publish_wittypi_config(client)
 try:
     while True:
         # Fill a string with date, humidity and temperature
@@ -55,15 +58,16 @@ try:
         sensor_data['temperature'] = round(temp, 2)
         sensor_data['humidity'] = round(hum, 2)
 
-        wittypi_data = wp.getAll()
-        # {'input_voltage': 4.42, 'output_voltage': 5.18, 'temperature': 33.0, 'output_current': 0.64, 'powermode': 0}
-
         # Print in the console
         #data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
         #print(data)
         # Sending humidity and temperature data to broaker
         client.publish('v1/bob/ambient', json.dumps(sensor_data), 1)
-        client.publish('v1/bob/wittypi',json.dumps(wittypi_data),1)
+
+        if USE_WITTIPY:
+            wittypi_data = wp.getAll()
+            # {'input_voltage': 4.42, 'output_voltage': 5.18, 'temperature': 33.0, 'output_current': 0.64, 'powermode': 0}
+            client.publish('v1/bob/wittypi',json.dumps(wittypi_data),1)
 
         next_reading += INTERVAL
         sleep_time = next_reading-time.time()
@@ -73,7 +77,8 @@ try:
         if sendcount > 20:
             sendcount = 0
             publish_aht20_config(client)
-            publish_wittypi_config(client)
+            if USE_WITTIPY:
+                publish_wittypi_config(client)
 except KeyboardInterrupt:
     pass
 
