@@ -43,6 +43,10 @@ class WittyPi:
         b = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_POWER_MODE)
         return b # int 0 or 1
 
+    def get_action_reason(self):
+        b = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_ACTION_REASON)
+        return b 
+
     def get_output_voltage(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_I)
         d = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_OUT_D)
@@ -68,7 +72,46 @@ class WittyPi:
         wittypi['temperature'] = self.get_temperature()
         wittypi['output_current'] = self.get_output_current()
         wittypi['powermode'] = self.get_power_mode()
+        wittypi['reason'] = self.get_action_reason()
+        self.dummy_set_fw_revision() # kick watchdog
         return wittypi
+
+    def get_rfu3(self):
+        data = self.i2c_bus.read_byte_data(WP_I2C_ADDR, 15)
+        txt="text: "
+        if data & 1<<7:
+            txt+="xx"
+        if data & 1<<6:
+            txt+=", yy"
+        if data & 1<<5:
+            txt+=", powerIsOn"
+        if data & 1<<4:
+            txt+=", wakeupByWatchdog"
+        if data & 1<<3:
+            txt+=", turnOffFromTXD"
+        if data & 1<<2:
+            txt+=", turningOff"
+        if data & 1<<1:
+            txt+=", systemIsUp"
+        if data & 1<<0:
+            txt+=", listenToTxd"
+        print("RFU3 ",bin(data), hex(data), txt)
+
+    def get_rfu2_nixda(self):
+        data = self.i2c_bus.read_byte_data(WP_I2C_ADDR, 14)
+        txt="text: "
+        if data & 1<<7:
+            txt += ", b7"
+        if data & 1<<6:
+            txt += ", turningOff"
+        if data & 1<<1:
+            txt += ", WDT on"
+        if data & 1<<1 == 0:
+            txt += ", WDT off"
+        if data & 1<<0:
+            txt += ", SystemIsUP"
+        #return data
+        print("NIXDA",bin(data), hex(data), txt)
 
     def get_fw_id(self):
         return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_ID)
@@ -82,6 +125,18 @@ class WittyPi:
         if val >= 0x400:
             val = (val&0x3FF)-1024
         return val*0.125
+    
+    def dummy_set_fw_revision(self):
+        '''
+        write to read-only wf_revision to kick i2c watchdog
+        '''
+        self.i2c_bus.write_byte_data(WP_I2C_ADDR, WP_I2C_FW_REVISION, 0)
+
+    def set_wdt_on(self):
+        self.i2c_bus.write_byte_data(WP_I2C_ADDR, 14, 1<<3)
+    def set_wdt_off(self):
+        self.i2c_bus.write_byte_data(WP_I2C_ADDR, 14, 1<<4)
+
 '''
     def get_status_busy(self):
         # Get the busy bit
