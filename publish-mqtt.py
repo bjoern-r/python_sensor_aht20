@@ -25,7 +25,7 @@ def publish_wittypi_config(client):
 INTERVAL=30
 MQTT_HOST = '10.192.123.2'
 #MQTT_HOST = '192.168.78.25'
-USE_WITTIPY = False
+USE_WITTIPY = True
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
@@ -34,7 +34,8 @@ next_reading = time.time()
 # Initialize an AHT20
 aht20 = AHT20.AHT20(0)
 # init smbus to wittypi
-wp = WittyPi.WittyPi(0)
+if USE_WITTIPY:
+    wp = WittyPi.WittyPi(0)
 
 client = mqtt.Client()
 client.on_connect = on_connect
