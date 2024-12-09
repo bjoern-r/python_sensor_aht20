@@ -13,18 +13,20 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
 
 def publish_aht20_config(client):
-    client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-T","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
-    client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-H/config', '{"device_class":"humidity","name":"Humidity","unit_of_measurement":"%","value_template":"{{ value_json.humidity|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-H","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}')
+    send_retain=True
+    client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-T","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}',retain=send_retain)
+    client.publish('homeassistant/sensor/BOB-Ambient/bob-ambient-H/config', '{"device_class":"humidity","name":"Humidity","unit_of_measurement":"%","value_template":"{{ value_json.humidity|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/ambient","unique_id":"bob-ambient-H","device":{"identifiers":["BOB-Ambient"],"name":"BOB-Ambient","model":"AHT20","manufacturer":"aht"},"expire_after":600}',retain=send_retain)
 
 def publish_wittypi_config(client):
-    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-T","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","model":"LM75B","manufacturer":"WittyPi"},"expire_after":600}')
-    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-I/config', '{"device_class":"current","name":"Output Current","unit_of_measurement":"A","value_template":"{{ value_json.output_current|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-I","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
-    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vo/config', '{"device_class":"voltage","name":"Output Voltage","unit_of_measurement":"V","value_template":"{{ value_json.output_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vo","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
-    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vi/config', '{"device_class":"voltage","name":"Input Voltage","unit_of_measurement":"V","value_template":"{{ value_json.input_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vi","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}')
+    send_retain=True
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-T/config', '{"device_class":"temperature","name":"Temperature","unit_of_measurement":"°C","value_template":"{{ value_json.temperature|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-T","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","model":"LM75B","manufacturer":"WittyPi"},"expire_after":600}',retain=send_retain)
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-I/config', '{"device_class":"current","name":"Output Current","unit_of_measurement":"A","value_template":"{{ value_json.output_current|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-I","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}',retain=send_retain)
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vo/config', '{"device_class":"voltage","name":"Output Voltage","unit_of_measurement":"V","value_template":"{{ value_json.output_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vo","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}',retain=send_retain)
+    client.publish('homeassistant/sensor/BOB-WittyPi/bob-wp-Vi/config', '{"device_class":"voltage","name":"Input Voltage","unit_of_measurement":"V","value_template":"{{ value_json.input_voltage|float|round(2) }}","state_class":"measurement","state_topic":"v1/bob/wittypi","unique_id":"bob-wp-Vi","device":{"identifiers":["BOB-WittyPi"],"name":"BOB-WittyPi","manufacturer":"WittyPi"},"expire_after":600}',retain=send_retain)
 
 INTERVAL=30
-MQTT_HOST = '10.192.123.2'
-#MQTT_HOST = '192.168.78.25'
+#MQTT_HOST = '10.192.123.2'
+MQTT_HOST = '192.168.78.96'
 USE_WITTIPY = True
 
 sensor_data = {'temperature': 0, 'humidity': 0}
@@ -75,7 +77,7 @@ try:
         if sleep_time > 0:
             time.sleep(sleep_time)
         sendcount += 1
-        if sendcount > 20:
+        if sendcount > 80:
             sendcount = 0
             publish_aht20_config(client)
             if USE_WITTIPY:
