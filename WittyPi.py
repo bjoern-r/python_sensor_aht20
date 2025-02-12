@@ -31,7 +31,7 @@ class WittyPi:
         # Check ID
         fw_id = self.get_fw_id()
         if fw_id == 55:
-            print("WittyPi 4 L3V7 with FW",self.get_fw_revision(), "found")
+            print("WittyPi 4 L3V7 with FW",hex(self.get_fw_revision()), "found")
 
     def get_input_voltage(self):
         i = self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_VOLTAGE_IN_I)
@@ -100,18 +100,19 @@ class WittyPi:
     def get_rfu2_nixda(self):
         data = self.i2c_bus.read_byte_data(WP_I2C_ADDR, 14)
         txt="text: "
-        if data & 1<<7:
+        if data & 1<<7 != 0:
             txt += ", b7"
-        if data & 1<<6:
+        if data & 1<<2 != 0:
             txt += ", turningOff"
-        if data & 1<<1:
+        if data & 1<<1 != 0:
             txt += ", WDT on"
         if data & 1<<1 == 0:
             txt += ", WDT off"
         if data & 1<<0:
             txt += ", SystemIsUP"
         #return data
-        print("NIXDA",bin(data), hex(data), txt)
+        #print("NIXDA",bin(data), hex(data), txt)
+        print(f'NIXDA {data:#010b} {data:#010x} {txt}')
 
     def get_fw_id(self):
         return self.i2c_bus.read_byte_data(WP_I2C_ADDR, WP_I2C_ID)
