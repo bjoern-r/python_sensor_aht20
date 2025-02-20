@@ -28,13 +28,15 @@ INTERVAL=30
 #MQTT_HOST = '10.192.123.2'
 MQTT_HOST = '192.168.78.96'
 USE_WITTIPY = True
+USE_AHT = True
 
 sensor_data = {'temperature': 0, 'humidity': 0}
 
 next_reading = time.time()
 
 # Initialize an AHT20
-aht20 = AHT20.AHT20(0)
+if USE_AHT:
+    aht20 = AHT20.AHT20(0)
 # init smbus to wittypi
 if USE_WITTIPY:
     wp = WittyPi.WittyPi(0)
@@ -49,23 +51,25 @@ client.connect(MQTT_HOST, 1883, 60)
 client.loop_start()
 sendcount=0
 
-publish_aht20_config(client)
+if USE_AHT:
+    publish_aht20_config(client)
 if USE_WITTIPY:
     publish_wittypi_config(client)
 try:
     while True:
         # Fill a string with date, humidity and temperature
-        hum = aht20.get_humidity()
-        temp = aht20.get_temperature()
+        if USE_AHT:
+            hum = aht20.get_humidity()
+            temp = aht20.get_temperature()
 
-        sensor_data['temperature'] = round(temp, 2)
-        sensor_data['humidity'] = round(hum, 2)
+            sensor_data['temperature'] = round(temp, 2)
+            sensor_data['humidity'] = round(hum, 2)
 
-        # Print in the console
-        #data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
-        #print(data)
-        # Sending humidity and temperature data to broaker
-        client.publish('v1/bob/ambient', json.dumps(sensor_data), 1)
+            # Print in the console
+            #data = str(datetime.datetime.now()) + ";" + "{:10.2f}".format(hum) + " %RH;" + "{:10.2f}".format(temp) + " °C"
+            #print(data)
+            # Sending humidity and temperature data to broaker
+            client.publish('v1/bob/ambient', json.dumps(sensor_data), 1)
 
         if USE_WITTIPY:
             wittypi_data = wp.getAll()
@@ -79,7 +83,8 @@ try:
         sendcount += 1
         if sendcount > 80:
             sendcount = 0
-            publish_aht20_config(client)
+            if USE_AHT:
+                publish_aht20_config(client)
             if USE_WITTIPY:
                 publish_wittypi_config(client)
 except KeyboardInterrupt:
